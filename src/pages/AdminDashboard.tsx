@@ -16,9 +16,14 @@ type BlogPostFormData = {
   tags: string;
 };
 
+type StoredBlogPost = Omit<BlogPostFormData, 'tags'> & {
+  tags: string[];
+  date: string;
+};
+
 export default function AdminDashboard() {
   const { toast } = useToast();
-  const [posts, setPosts] = useState<Array<BlogPostFormData & { date: string }>>([]);
+  const [posts, setPosts] = useState<StoredBlogPost[]>([]);
 
   const form = useForm<BlogPostFormData>({
     defaultValues: {
@@ -31,8 +36,11 @@ export default function AdminDashboard() {
   });
 
   const handlePublish = (data: BlogPostFormData) => {
-    const newPost = {
-      ...data,
+    const newPost: StoredBlogPost = {
+      title: data.title,
+      excerpt: data.excerpt,
+      content: data.content,
+      category: data.category,
       tags: data.tags.split(",").map((tag) => tag.trim()),
       date: new Date().toISOString().split("T")[0],
     };
