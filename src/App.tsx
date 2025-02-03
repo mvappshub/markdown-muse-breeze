@@ -1,29 +1,27 @@
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "@/components/ThemeProvider";
-import Index from "./pages/Index";
-import NotFound from "./pages/NotFound";
+import { Navbar } from "@/components/Navbar";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Index from "@/pages/Index";
+import Admin from "@/pages/Admin";
+import AdminDashboard from "@/pages/AdminDashboard";
+import NotFound from "@/pages/NotFound";
 
-const queryClient = new QueryClient();
-
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <ThemeProvider defaultTheme="system" storageKey="blog-theme">
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
+function App() {
+  return (
+    <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
+      <Router>
+        <div className="min-h-screen bg-background font-inter">
+          <Navbar />
           <Routes>
             <Route path="/" element={<Index />} />
+            <Route path="/admin" element={<Admin />} />
+            <Route path="/admin/dashboard" element={<AdminDashboard />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
-        </BrowserRouter>
-      </TooltipProvider>
+        </div>
+      </Router>
     </ThemeProvider>
-  </QueryClientProvider>
-);
+  );
+}
 
 export default App;
