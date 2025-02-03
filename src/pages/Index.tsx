@@ -23,7 +23,7 @@ const posts = [
     date: "2024-02-18",
     tags: ["Ethics", "AI Safety"],
   },
-] as const;
+];
 
 const Index = () => {
   return (
