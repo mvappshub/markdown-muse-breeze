@@ -1,14 +1,14 @@
-import { Brain, Sparkles, Shield, Newspaper, BookOpen } from "lucide-react";
+import { MessageSquare, Image, Music, Code, Atom } from "lucide-react";
 import { ThemeToggle } from "./ThemeToggle";
 import { Button } from "./ui/button";
 import { Link } from "react-router-dom";
 
 const categories = [
-  { name: "AI Research", icon: Brain },
-  { name: "Machine Learning", icon: Sparkles },
-  { name: "AI Ethics", icon: Shield },
-  { name: "Industry News", icon: Newspaper },
-  { name: "Tutorials", icon: BookOpen },
+  { name: "AI Chatbots", icon: MessageSquare },
+  { name: "AI Images & Videos", icon: Image },
+  { name: "AI Music", icon: Music },
+  { name: "AI Coding", icon: Code },
+  { name: "Other AI", icon: Atom },
 ];
 
 export function Navbar() {
@@ -16,7 +16,7 @@ export function Navbar() {
     <nav className="border-b">
       <div className="container flex h-16 items-center px-4">
         <Link to="/" className="flex items-center space-x-2">
-          <Brain className="h-6 w-6" />
+          <Atom className="h-6 w-6" />
           <span className="font-bold">AI Blog</span>
         </Link>
         <div className="flex flex-1 items-center justify-center space-x-4">

@@ -1,13 +1,13 @@
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "./ui/card";
 import { Badge } from "./ui/badge";
-import { Brain, Sparkles, Shield, Newspaper, BookOpen } from "lucide-react";
+import { MessageSquare, Image, Music, Code, Atom } from "lucide-react";
 
 const categoryIcons = {
-  "AI Research": Brain,
-  "Machine Learning": Sparkles,
-  "AI Ethics": Shield,
-  "Industry News": Newspaper,
-  "Tutorials": BookOpen,
+  "AI Chatbots": MessageSquare,
+  "AI Images & Videos": Image,
+  "AI Music": Music,
+  "AI Coding": Code,
+  "Other AI": Atom,
 };
 
 interface BlogCardProps {
