@@ -1,38 +1,75 @@
 import { BlogCard } from "@/components/BlogCard";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
-const posts = [
-  {
-    title: "The Future of Large Language Models",
-    excerpt: "Exploring the next generation of AI language models and their potential impact on society...",
-    category: "AI Chatbots" as const,
-    date: "2024-02-20",
-    tags: ["LLM", "GPT", "Future Tech"],
-  },
-  {
-    title: "Understanding Neural Networks",
-    excerpt: "A comprehensive guide to neural networks and their applications in modern AI...",
-    category: "AI Images & Videos" as const,
-    date: "2024-02-19",
-    tags: ["Neural Networks", "Deep Learning"],
-  },
-  {
-    title: "AI Ethics in Practice",
-    excerpt: "Examining real-world cases of ethical challenges in AI development and deployment...",
-    category: "AI Music" as const,
-    date: "2024-02-18",
-    tags: ["Ethics", "AI Safety"],
-  },
-];
+type BlogPost = {
+  title: string;
+  excerpt: string;
+  category: "AI Chatbots" | "AI Images & Videos" | "AI Music" | "AI Coding" | "Other AI";
+  created_at: string;
+  tags: string[];
+};
 
 const Index = () => {
+  const [posts, setPosts] = useState<BlogPost[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchPosts() {
+      try {
+        const { data, error } = await supabase
+          .from('posts')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (error) {
+          console.error('Error fetching posts:', error);
+          return;
+        }
+
+        setPosts(data || []);
+      } catch (error) {
+        console.error('Error:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    fetchPosts();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <main className="container py-8">
+        <h1 className="mb-8 text-4xl font-bold">Latest Articles</h1>
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="h-64 animate-pulse bg-muted rounded-lg" />
+          ))}
+        </div>
+      </main>
+    );
+  }
+
   return (
     <main className="container py-8">
       <h1 className="mb-8 text-4xl font-bold">Latest Articles</h1>
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {posts.map((post) => (
-          <BlogCard key={post.title} {...post} />
-        ))}
-      </div>
+      {posts.length === 0 ? (
+        <p className="text-center text-muted-foreground">No articles published yet.</p>
+      ) : (
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {posts.map((post) => (
+            <BlogCard
+              key={post.title}
+              title={post.title}
+              excerpt={post.excerpt || ""}
+              category={post.category}
+              date={new Date(post.created_at).toLocaleDateString()}
+              tags={post.tags || []}
+            />
+          ))}
+        </div>
+      )}
     </main>
   );
 };
