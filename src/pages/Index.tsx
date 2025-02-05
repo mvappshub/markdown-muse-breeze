@@ -10,6 +10,17 @@ type BlogPost = {
   tags: string[];
 };
 
+const isValidCategory = (category: string): category is BlogPost['category'] => {
+  const validCategories = [
+    "AI Chatbots",
+    "AI Images & Videos",
+    "AI Music",
+    "AI Coding",
+    "Other AI"
+  ];
+  return validCategories.includes(category);
+};
+
 const Index = () => {
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -27,7 +38,18 @@ const Index = () => {
           return;
         }
 
-        setPosts(data || []);
+        // Transform and validate the data
+        const validPosts = (data || []).filter(post => 
+          post.category && isValidCategory(post.category)
+        ).map(post => ({
+          title: post.title,
+          excerpt: post.excerpt || "",
+          category: post.category as BlogPost['category'],
+          created_at: post.created_at,
+          tags: post.tags || []
+        }));
+
+        setPosts(validPosts);
       } catch (error) {
         console.error('Error:', error);
       } finally {
@@ -62,10 +84,10 @@ const Index = () => {
             <BlogCard
               key={post.title}
               title={post.title}
-              excerpt={post.excerpt || ""}
+              excerpt={post.excerpt}
               category={post.category}
               date={new Date(post.created_at).toLocaleDateString()}
-              tags={post.tags || []}
+              tags={post.tags}
             />
           ))}
         </div>
