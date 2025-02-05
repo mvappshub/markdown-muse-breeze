@@ -3,10 +3,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/components/AuthProvider";
 
 type BlogPostFormData = {
   title: string;
@@ -18,12 +20,13 @@ type BlogPostFormData = {
 
 type StoredBlogPost = Omit<BlogPostFormData, 'tags'> & {
   tags: string[];
-  date: string;
+  created_at: string;
 };
 
 export default function AdminDashboard() {
   const { toast } = useToast();
   const [posts, setPosts] = useState<StoredBlogPost[]>([]);
+  const { user } = useAuth();
 
   const form = useForm<BlogPostFormData>({
     defaultValues: {
@@ -35,25 +38,50 @@ export default function AdminDashboard() {
     },
   });
 
-  const handlePublish = (data: BlogPostFormData) => {
-    const newPost: StoredBlogPost = {
-      title: data.title,
-      excerpt: data.excerpt,
-      content: data.content,
-      category: data.category,
-      tags: data.tags.split(",").map((tag) => tag.trim()),
-      date: new Date().toISOString().split("T")[0],
-    };
-    
-    setPosts((currentPosts) => [...currentPosts, newPost]);
-    console.log("New post created:", newPost);
-    
-    toast({
-      title: "Post Published",
-      description: "Your blog post has been successfully published.",
-    });
-    
-    form.reset();
+  const handlePublish = async (data: BlogPostFormData) => {
+    try {
+      if (!user) {
+        toast({
+          title: "Error",
+          description: "You must be logged in to create posts",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const { error } = await supabase.from('posts').insert({
+        title: data.title,
+        excerpt: data.excerpt,
+        content: data.content,
+        category: data.category,
+        tags: data.tags.split(",").map(tag => tag.trim()).filter(tag => tag !== ""),
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Your blog post has been successfully published.",
+      });
+
+      // Fetch the latest posts after successful creation
+      const { data: newPosts, error: fetchError } = await supabase
+        .from('posts')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (fetchError) throw fetchError;
+
+      setPosts(newPosts as StoredBlogPost[]);
+      form.reset();
+    } catch (error) {
+      console.error('Error creating post:', error);
+      toast({
+        title: "Error",
+        description: "Failed to publish post. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -169,7 +197,7 @@ export default function AdminDashboard() {
               {posts.map((post, index) => (
                 <div key={index} className="p-4 border rounded">
                   <h3 className="font-bold">{post.title}</h3>
-                  <p className="text-sm text-muted-foreground">{post.category} - {post.date}</p>
+                  <p className="text-sm text-muted-foreground">{post.category} - {post.created_at}</p>
                 </div>
               ))}
             </div>
