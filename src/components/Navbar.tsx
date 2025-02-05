@@ -1,7 +1,15 @@
-import { MessageSquare, Image, Music, Code, Atom } from "lucide-react";
+
+import { MessageSquare, Image, Music, Code, Atom, User } from "lucide-react";
 import { ThemeToggle } from "./ThemeToggle";
 import { Button } from "./ui/button";
 import { Link } from "react-router-dom";
+import { useAuth } from "./AuthProvider";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const categories = [
   { name: "AI Chatbots", icon: MessageSquare },
@@ -12,6 +20,8 @@ const categories = [
 ];
 
 export function Navbar() {
+  const { user, signOut } = useAuth();
+
   return (
     <nav className="border-b">
       <div className="container flex h-16 items-center px-4">
@@ -29,9 +39,29 @@ export function Navbar() {
         </div>
         <div className="flex items-center space-x-4">
           <ThemeToggle />
-          <Link to="/admin">
-            <Button variant="outline">Admin</Button>
-          </Link>
+          {user ? (
+            <>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon">
+                    <User className="h-5 w-5" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem>
+                    <Link to="/admin">Admin Dashboard</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => signOut()}>
+                    Sign Out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </>
+          ) : (
+            <Link to="/auth">
+              <Button>Sign In</Button>
+            </Link>
+          )}
         </div>
       </div>
     </nav>
