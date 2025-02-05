@@ -1,4 +1,3 @@
-
 import { MessageSquare, Image, Music, Code, Atom, User } from "lucide-react";
 import { ThemeToggle } from "./ThemeToggle";
 import { Button } from "./ui/button";
