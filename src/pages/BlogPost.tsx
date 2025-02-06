@@ -29,10 +29,13 @@ const BlogPost = () => {
   useEffect(() => {
     async function fetchPost() {
       try {
+        // Convert string id to number
+        const numericId = parseInt(id!, 10);
+        
         const { data, error } = await supabase
           .from("posts")
           .select("*")
-          .eq("id", id)
+          .eq("id", numericId)
           .single();
 
         if (error) throw error;
