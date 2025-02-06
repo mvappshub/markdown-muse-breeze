@@ -7,6 +7,7 @@ import Admin from "@/pages/Admin";
 import AdminDashboard from "@/pages/AdminDashboard";
 import Auth from "@/pages/Auth";
 import NotFound from "@/pages/NotFound";
+import BlogPost from "@/pages/BlogPost";
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
             <Navbar />
             <Routes>
               <Route path="/" element={<Index />} />
+              <Route path="/post/:id" element={<BlogPost />} />
               <Route path="/admin" element={<Admin />} />
               <Route path="/admin/dashboard" element={<AdminDashboard />} />
               <Route path="/auth" element={<Auth />} />
